@@ -18,17 +18,27 @@ from PIL import Image
 from io import BytesIO
 import tqdm
 
+
 def parse_data(data_file):
     csvfile = open(data_file, 'r')
     csvreader = csv.reader(csvfile)
-    key_url_list = [line[:2] for line in csvreader]
-    return key_url_list[1:]  # Chop off header
+    id_url_cat_list = [line[:3] for line in csvreader]
+    return id_url_cat_list[1:]  # Chop off header
 
 
-def download_image(key_url):
+def download_image(id_url_cat):
     out_dir = sys.argv[2]
-    (key, url) = key_url
-    filename = os.path.join(out_dir, '{}.jpg'.format(key))
+
+    if len(id_url_cat) >= 3:
+        (id, url, cat) = id_url_cat
+    else:
+        (id, url) = id_url_cat
+        cat = ""
+
+    sub_folder = os.path.join(out_dir, cat)
+    if not os.path.exists(sub_folder):
+        os.mkdir(sub_folder)
+    filename = os.path.join(sub_folder, '{}.jpg'.format(id))
 
     if os.path.exists(filename):
         print('Image {} already exists. Skipping download.'.format(filename))
@@ -38,19 +48,19 @@ def download_image(key_url):
         response = request.urlopen(url)
         image_data = response.read()
     except:
-        print('Warning: Could not download image {} from {}'.format(key, url))
+        print('Warning: Could not download image {} from {}'.format(id, url))
         return 1
 
     try:
         pil_image = Image.open(BytesIO(image_data))
     except:
-        print('Warning: Failed to parse image {}'.format(key))
+        print('Warning: Failed to parse image {}'.format(id))
         return 1
 
     try:
         pil_image_rgb = pil_image.convert('RGB')
     except:
-        print('Warning: Failed to convert image {} to RGB'.format(key))
+        print('Warning: Failed to convert image {} to RGB'.format(id))
         return 1
 
     try:
@@ -58,7 +68,7 @@ def download_image(key_url):
     except:
         print('Warning: Failed to save image {}'.format(filename))
         return 1
-    
+
     return 0
 
 
@@ -68,12 +78,9 @@ def loader():
         sys.exit(0)
     (data_file, out_dir) = sys.argv[1:]
 
-    if not os.path.exists(out_dir):
-        os.mkdir(out_dir)
-
-    key_url_list = parse_data(data_file)
-    pool = multiprocessing.Pool(processes=2)  # Num of CPUs
-    failures = sum(tqdm.tqdm(pool.imap_unordered(download_image, key_url_list), total=len(key_url_list)))
+    id_url_cat_list = parse_data(data_file)
+    pool = multiprocessing.Pool(processes=4)  # Num of CPUs
+    failures = sum(tqdm.tqdm(pool.imap_unordered(download_image, id_url_cat_list), total=len(id_url_cat_list)))
     print('Total number of download failures:', failures)
     pool.close()
     pool.terminate()
