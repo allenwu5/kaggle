@@ -1,10 +1,10 @@
-import argparse
-import glob
 import os
 import sys
+import glob
+import argparse
 
 import matplotlib as mpl
-# from keras import __version__
+from keras import __version__
 from keras.applications.inception_v3 import InceptionV3, preprocess_input
 from keras.models import Model
 from keras.layers import Dense, GlobalAveragePooling2D
@@ -14,7 +14,7 @@ from keras.optimizers import SGD
 mpl.use('TkAgg')
 
 IM_WIDTH, IM_HEIGHT = 299, 299 #fixed size for InceptionV3
-NB_EPOCHS = 3
+NB_EPOCHS = 1
 BAT_SIZE = 32
 FC_SIZE = 1024
 NB_IV3_LAYERS_TO_FREEZE = 172
@@ -120,11 +120,13 @@ def train(args):
 
   history_tl = model.fit_generator(
     train_generator,
-    nb_epoch=nb_epoch,
-    samples_per_epoch=nb_train_samples,
+      epochs=nb_epoch,
+      steps_per_epoch=nb_train_samples,
     validation_data=validation_generator,
-    nb_val_samples=nb_val_samples,
+      validation_steps=nb_val_samples,
     class_weight='auto')
+
+  # `fit_generator( < keras.pre..., validation_data = < keras.pre..., class_weight = "auto", steps_per_epoch = 134, epochs = 3, validation_steps = 892)`
 
   # fine-tuning
   setup_to_finetune(model)
@@ -135,7 +137,9 @@ def train(args):
     nb_epoch=nb_epoch,
     validation_data=validation_generator,
     nb_val_samples=nb_val_samples,
-    class_weight='auto')
+    class_weight='auto',
+    # https: // github.com / keras - team / keras / issues / 3657
+    verbose=False)
 
   model.save(args.output_model_file)
 
@@ -180,3 +184,6 @@ if __name__=="__main__":
     sys.exit(1)
 
   train(args)
+
+  print("Done ;) ")
+  sys.exit(0)
