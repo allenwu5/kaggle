@@ -19,8 +19,6 @@ from io import BytesIO
 import tqdm
 from collections import defaultdict
 
-
-train_category_download_count = defaultdict(lambda: 0)
 train_category_download_max_count = 2;
 
 def parse_data(data_file):
@@ -36,8 +34,6 @@ def download_image(id_url_cat):
     if len(id_url_cat) >= 3:
         # Train data
         (id, url, cat) = id_url_cat
-        if train_category_download_count[cat] >= train_category_download_max_count:
-            return 0
     else:
         # Test
         (id, url) = id_url_cat
@@ -46,6 +42,12 @@ def download_image(id_url_cat):
     sub_folder = os.path.join(out_dir, cat)
     if not os.path.exists(sub_folder):
         os.makedirs(sub_folder)
+
+    if cat:
+        path, dirs, files = next(os.walk(sub_folder))
+        file_count = len(files)
+        if file_count >= train_category_download_max_count:
+            return 0
     filename = os.path.join(sub_folder, '{}.jpg'.format(id))
 
     if os.path.exists(filename):
@@ -77,8 +79,6 @@ def download_image(id_url_cat):
         print('Warning: Failed to save image {}'.format(filename))
         return 1
 
-    if cat:
-        train_category_download_count[cat] += 1
     return 0
 
 
