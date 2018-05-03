@@ -2,25 +2,11 @@
 
 # !/usr/bin/python
 
-# Note: requires the tqdm package (pip install tqdm)
-
-# Note to Kagglers: This script will not run directly in Kaggle kernels. You
-# need to download it and run it on your local machine.
-
-# Downloads images from the Google Landmarks dataset using multiple threads.
-# Images that already exist will not be downloaded again, so the script can
-# resume a partially completed download. All images will be saved in the JPG
-# format with 90% compression quality.
-
-import csv
-import multiprocessing
 import os
 import sys
 from io import BytesIO
-from urllib import request
 
 import tqdm
-from PIL import Image
 
 train_category_download_max_count = 2;
 
@@ -35,8 +21,10 @@ def download_image(id_url_cat):
     out_dir = sys.argv[2]
 
     if len(id_url_cat) >= 3:
+        # Train data
         (id, url, cat) = id_url_cat
     else:
+        # Test
         (id, url) = id_url_cat
         cat = ""
 
@@ -44,13 +32,11 @@ def download_image(id_url_cat):
     if not os.path.exists(sub_folder):
         os.makedirs(sub_folder)
 
-    # If it's train data, only download train_category_download_max_count files
     if cat:
         path, dirs, files = next(os.walk(sub_folder))
         file_count = len(files)
         if file_count >= train_category_download_max_count:
             return 0
-
     filename = os.path.join(sub_folder, '{}.jpg'.format(id))
 
     if os.path.exists(filename):
