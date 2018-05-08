@@ -4,88 +4,44 @@
 
 import os
 import sys
-from io import BytesIO
 
-import tqdm
+from tqdm import tqdm
 
-train_category_download_max_count = 2;
-
-def parse_data(data_file):
-    csvfile = open(data_file, 'r')
-    csvreader = csv.reader(csvfile)
-    id_url_cat_list = [line[:3] for line in csvreader]
-    return id_url_cat_list[1:]  # Chop off header
+validate_category_max_count = 1;
 
 
-def download_image(id_url_cat):
-    out_dir = sys.argv[2]
+def split():
+    if len(sys.argv) != 3:
+        print('Syntax: {} <train_dir/> <validate_dir/>'.format(sys.argv[0]))
+        sys.exit(0)
 
-    if len(id_url_cat) >= 3:
-        # Train data
-        (id, url, cat) = id_url_cat
-    else:
-        # Test
-        (id, url) = id_url_cat
-        cat = ""
+    (train_dir, validate_dir) = sys.argv[1:]
 
-    sub_folder = os.path.join(out_dir, cat)
-    if not os.path.exists(sub_folder):
-        os.makedirs(sub_folder)
+    categories = os.listdir(train_dir)
+    for category in tqdm(categories, total=len(categories)):
+        train_sub_folder_path = os.path.join(train_dir, category)
+        validate_sub_folder_path = os.path.join(validate_dir, category)
 
-    if cat:
-        path, dirs, files = next(os.walk(sub_folder))
-        file_count = len(files)
-        if file_count >= train_category_download_max_count:
-            return 0
-    filename = os.path.join(sub_folder, '{}.jpg'.format(id))
+        if os.path.isdir(train_sub_folder_path):
+            if not os.path.exists(validate_sub_folder_path):
+                os.makedirs(validate_sub_folder_path)
 
-    if os.path.exists(filename):
-        print('Image {} already exists. Skipping download.'.format(filename))
-        return 0
+            validate_img_count = 0
+            for img_file in os.listdir(validate_sub_folder_path):
+                if img_file.endswith(".jpg") or img_file.endswith(".jpeg"):
+                    validate_img_count += 1
 
-    try:
-        response = request.urlopen(url)
-        image_data = response.read()
-    except:
-        print('Warning: Could not download image {} from {}'.format(id, url))
-        return 1
-
-    try:
-        pil_image = Image.open(BytesIO(image_data))
-    except:
-        print('Warning: Failed to parse image {}'.format(id))
-        return 1
-
-    try:
-        pil_image_rgb = pil_image.convert('RGB')
-    except:
-        print('Warning: Failed to convert image {} to RGB'.format(id))
-        return 1
-
-    try:
-        pil_image_rgb.save(filename, format='JPEG', quality=90)
-    except:
-        print('Warning: Failed to save image {}'.format(filename))
-        return 1
+            for img_file in os.listdir(train_sub_folder_path):
+                if img_file.endswith(".jpg") or img_file.endswith(".jpeg"):
+                    img_path = os.path.join(train_sub_folder_path, img_file)
+                    if validate_img_count < validate_category_max_count:
+                        os.rename(img_path, os.path.join(validate_sub_folder_path, img_file))
+                        validate_img_count += 1
+                    else:
+                        break
 
     return 0
 
 
-def loader():
-    if len(sys.argv) != 3:
-        print('Syntax: {} <data_file.csv> <output_dir/>'.format(sys.argv[0]))
-        sys.exit(0)
-    (data_file, out_dir) = sys.argv[1:]
-
-    id_url_cat_list = parse_data(data_file)
-    pool = multiprocessing.Pool(processes=4)  # Num of CPUs
-    failures = sum(tqdm.tqdm(pool.imap_unordered(download_image, id_url_cat_list), total=len(id_url_cat_list)))
-    print('Total number of download failures:', failures)
-    pool.close()
-    pool.terminate()
-
-
-# arg1 : data_file.csv
-# arg2 : output_dir
 if __name__ == '__main__':
-    loader()
+    split()
