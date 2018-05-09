@@ -28,7 +28,7 @@ def detect():
                     img_path = os.path.join(sub_folder_path, img_file)
                     try:
                         img = Image.open(img_path)  # open the image file
-                        img.verify()  # verify that it is, in fact an image
+                        img.load()
                     except (IOError, SyntaxError) as e:
                         os.remove(img_path)
                         print('Removed broken jpg file:', img_path)  # print out the names of corrupt files
