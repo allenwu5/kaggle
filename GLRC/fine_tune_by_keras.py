@@ -123,8 +123,7 @@ def train(args):
         epochs=nb_epoch,
         steps_per_epoch=nb_train_samples,
         validation_data=validation_generator,
-        # https: // github.com / keras - team / keras / issues / 8595
-        validation_steps=nb_val_samples / batch_size,
+        validation_steps=nb_val_samples,
         class_weight='auto')
 
     # `fit_generator( < keras.pre..., validation_data = < keras.pre..., class_weight = "auto", steps_per_epoch = 134, epochs = 3, validation_steps = 892)`
