@@ -7,6 +7,7 @@ import sys
 
 from PIL import Image
 from tqdm import tqdm
+from shutil import rmtree
 
 validate_category_max_count = 1;
 
@@ -23,15 +24,20 @@ def detect():
         sub_folder_path = os.path.join(dir, category)
 
         if os.path.isdir(sub_folder_path):
+            img_count = 0
             for img_file in os.listdir(sub_folder_path):
                 if img_file.endswith(".jpg") or img_file.endswith(".jpeg"):
                     img_path = os.path.join(sub_folder_path, img_file)
                     try:
                         img = Image.open(img_path)  # open the image file
                         img.load()
+                        img_count +=1
                     except (IOError, SyntaxError) as e:
                         os.remove(img_path)
                         print('Removed broken jpg file:', img_path)  # print out the names of corrupt files
+            if img_count == 0:
+                rmtree(sub_folder_path)
+                print('Removed empty folder:', sub_folder_path)
 
     return 0
 
