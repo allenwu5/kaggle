@@ -13,9 +13,9 @@ from keras.optimizers import SGD
 
 mpl.use('TkAgg')
 
-IM_WIDTH = 299  # 299 for InceptionV3
+IM_WIDTH = 64  # 299 for InceptionV3
 IM_HEIGHT = IM_WIDTH
-NB_EPOCHS = 3
+NB_EPOCHS = 1
 BAT_SIZE = 32
 FC_SIZE = 1024
 NB_IV3_LAYERS_TO_FREEZE = 172
@@ -90,6 +90,7 @@ def train(args):
         zoom_range=0.2,
         horizontal_flip=True
     )
+
     test_datagen = ImageDataGenerator(
         preprocessing_function=preprocess_input,
         rotation_range=30,
@@ -126,15 +127,16 @@ def train(args):
         validation_data=validation_generator,
         # https: // github.com / keras - team / keras / issues / 8595
         validation_steps=nb_val_samples / batch_size,
-        class_weight='auto')
+        class_weight='auto',
+        verbose=False)
 
     # fine-tuning
     setup_to_finetune(model)
 
     history_ft = model.fit_generator(
         train_generator,
-        steps_per_epoch=nb_train_samples / batch_size,
         epochs=nb_epoch,
+        steps_per_epoch=nb_train_samples / batch_size,
         validation_data=validation_generator,
         validation_steps=nb_val_samples / batch_size,
         class_weight='auto',
