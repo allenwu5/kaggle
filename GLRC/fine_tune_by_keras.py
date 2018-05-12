@@ -127,8 +127,7 @@ def train(args):
         validation_data=validation_generator,
         # https: // github.com / keras - team / keras / issues / 8595
         validation_steps=nb_val_samples / batch_size,
-        class_weight='auto',
-        verbose=False)
+        class_weight='auto')
 
     # fine-tuning
     setup_to_finetune(model)
@@ -139,9 +138,7 @@ def train(args):
         steps_per_epoch=nb_train_samples / batch_size,
         validation_data=validation_generator,
         validation_steps=nb_val_samples / batch_size,
-        class_weight='auto',
-        # https: // github.com / keras - team / keras / issues / 3657
-        verbose=False)
+        class_weight='auto')
 
     model.save(args.output_model_file)
 
