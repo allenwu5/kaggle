@@ -13,9 +13,9 @@ from keras.optimizers import SGD
 
 mpl.use('TkAgg')
 
-IM_WIDTH = 64  # 299 for InceptionV3
+IM_WIDTH = 299  # 299 for InceptionV3
 IM_HEIGHT = IM_WIDTH
-NB_EPOCHS = 1
+NB_EPOCHS = 3
 BAT_SIZE = 32
 FC_SIZE = 1024
 NB_IV3_LAYERS_TO_FREEZE = 172
@@ -133,10 +133,10 @@ def train(args):
 
     history_ft = model.fit_generator(
         train_generator,
-        samples_per_epoch=nb_train_samples,
-        nb_epoch=nb_epoch,
+        steps_per_epoch=nb_train_samples / batch_size,
+        epochs=nb_epoch,
         validation_data=validation_generator,
-        nb_val_samples=nb_val_samples,
+        validation_steps=nb_val_samples / batch_size,
         class_weight='auto',
         # https: // github.com / keras - team / keras / issues / 3657
         verbose=False)
