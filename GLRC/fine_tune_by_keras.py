@@ -114,7 +114,7 @@ def train(args):
     )
 
     with open('validation_class_indices.json', 'w') as fp:
-        json.dump(validation_generator.class_indices, fp)
+        json.dump(validation_generator.class_indices, fp, sort_keys=True, indent=4)
 
     # setup model
     base_model = DenseNet121(weights='imagenet', include_top=False)  # include_top=False excludes final FC layer
