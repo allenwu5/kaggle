@@ -21,7 +21,7 @@ def detect():
 
     categories = os.listdir(dir)
 
-    print("Create image list\")
+    print("Create image list")
     for category in tqdm(categories, total=len(categories)):
         sub_folder_path = os.path.join(dir, category)
 
