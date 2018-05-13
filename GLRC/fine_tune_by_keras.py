@@ -113,7 +113,11 @@ def train(args):
         batch_size=batch_size,
     )
 
-    print(validation_generator.class_indices)
+    validation_class_indices_file = open('validation_class_indices.txt', 'w')
+    for _class, index in validation_generator.class_indices.items():
+        validation_class_indices_file.write("{}: {}\n".format(index, _class))
+
+    validation_class_indices_file.close()
 
     # setup model
     base_model = DenseNet121(weights='imagenet', include_top=False)  # include_top=False excludes final FC layer
