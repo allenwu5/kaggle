@@ -1,16 +1,19 @@
-import sys
 import argparse
+
+# import matplotlib as mpl
 import numpy as np
+import os
 from PIL import Image
-import matplotlib as mpl
-
-from keras.preprocessing import image
-from keras.models import load_model
 from keras.applications.inception_v3 import preprocess_input
+from keras.models import load_model
+from keras.preprocessing import image
+from tqdm import tqdm
+import json
+import csv
 
-mpl.use('TkAgg')
+# mpl.use('TkAgg')
 
-import matplotlib.pyplot as plt
+# import matplotlib.pyplot as plt
 
 target_size = (229, 229)  # fixed size for InceptionV3 architecture
 
@@ -57,23 +60,48 @@ def plot_preds(image, preds):
 if __name__ == "__main__":
     a = argparse.ArgumentParser()
 
-    img_test = "test/00faf8958470eb9a.jpg"  # small green leaf tower - tourist attraction
+    # img_test = "test/00faf8958470eb9a.jpg"  # small green leaf tower - tourist attraction
 
     # img_{train folder}_{class in model}
-    img_9003_0 = "train/9003/d83118ef0291a8a3.jpg"  # Louvre Museum - white - big - horizontal - louvre triangle
-    img_9301_5 = "train/9301/c5a836101f701633.jpg"  # cathedral - yellow clock tower
-    img_9999_11 = "train/9999/df68277c0b4a1653.jpg"  # Bass Harbor Head Lighthouse
+    # img_9003_0 = "train/9003/d83118ef0291a8a3.jpg"  # Louvre Museum - white - big - horizontal - louvre triangle
+    # img_9301_5 = "train/9301/c5a836101f701633.jpg"  # cathedral - yellow clock tower
+    # img_9999_11 = "train/9999/bba9d071d223e817.jpg"  # Bass Harbor Head Lighthouse
 
-    a.add_argument("--image", help="path to image", default=img_test)
-    a.add_argument("--model", default="inceptionv3-ft.model")
+    a.add_argument("--model", default="dense121-ft.model")
+    a.add_argument("--predict_dir")
+
     args = a.parse_args()
 
-    if args.image is None and args.image_url is None:
-        a.print_help()
-        sys.exit(1)
+    assert args.predict_dir, "--predict_dir <the dir includes images going to be predict>"
 
-    model = load_model(args.model)
-    if args.image is not None:
-        img = Image.open(args.image)
-        preds = predict(model, img, target_size)
-        plot_preds(img, preds)
+    with open('validation_class_indices.json', 'r') as fp:
+        validation_class_indices = json.load(fp)
+        index_to_class = dict((v, k) for k, v in validation_class_indices.items())
+
+    with open("submission.csv", 'w', newline='') as csvfile:
+        csv_writer = csv.writer(csvfile, delimiter=',')
+        csv_writer.writerow(["id", "landmarks"])
+        csvfile.flush()
+
+        model = load_model(args.model)
+
+        img_paths = {}
+        categories = os.listdir(args.predict_dir)
+        for category in tqdm(categories, total=len(categories)):
+            sub_folder_path = os.path.join(args.predict_dir, category)
+
+            if os.path.isdir(sub_folder_path):
+                for img_file in os.listdir(sub_folder_path):
+                    if img_file.endswith(".jpg") or img_file.endswith(".jpeg"):
+                        img_path = os.path.join(sub_folder_path, img_file)
+                        img_id = img_file.split(".")[0]
+                        img_paths[img_id] = img_path
+
+        for img_id, img_path in tqdm(img_paths.items(), total=len(img_paths)):
+            img = Image.open(img_path)
+
+            preds = predict(model, img, target_size)
+            # plot_preds(img, preds)
+            index = np.argmax(preds, axis=None)
+            csv_writer.writerow([img_id, "{} {}".format(index_to_class[index], preds[index])])
+            csvfile.flush()
