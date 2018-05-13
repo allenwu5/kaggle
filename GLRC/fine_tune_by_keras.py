@@ -1,15 +1,15 @@
+import argparse
+import glob
+import json
 import os
 import sys
-import glob
-import argparse
 
 import matplotlib as mpl
-from keras import __version__
 from keras.applications.densenet import DenseNet121, preprocess_input
-from keras.models import Model
 from keras.layers import Dense, GlobalAveragePooling2D
-from keras.preprocessing.image import ImageDataGenerator
+from keras.models import Model
 from keras.optimizers import SGD
+from keras.preprocessing.image import ImageDataGenerator
 
 mpl.use('TkAgg')
 
@@ -113,11 +113,8 @@ def train(args):
         batch_size=batch_size,
     )
 
-    validation_class_indices_file = open('validation_class_indices.txt', 'w')
-    for _class, index in validation_generator.class_indices.items():
-        validation_class_indices_file.write("{}: {}\n".format(index, _class))
-
-    validation_class_indices_file.close()
+    with open('validation_class_indices.json', 'w') as fp:
+        json.dump(validation_generator.class_indices, fp)
 
     # setup model
     base_model = DenseNet121(weights='imagenet', include_top=False)  # include_top=False excludes final FC layer
