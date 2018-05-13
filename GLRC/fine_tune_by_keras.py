@@ -113,6 +113,8 @@ def train(args):
         batch_size=batch_size,
     )
 
+    print(validation_generator.class_indices)
+
     # setup model
     base_model = DenseNet121(weights='imagenet', include_top=False)  # include_top=False excludes final FC layer
     model = add_new_last_layer(base_model, nb_classes)
