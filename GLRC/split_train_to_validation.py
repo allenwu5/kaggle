@@ -7,7 +7,7 @@ import sys
 
 from tqdm import tqdm
 
-validate_category_max_count = 1;
+validate_category_max_count = 3;
 
 
 def split():
