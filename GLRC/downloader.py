@@ -22,7 +22,7 @@ from urllib import request
 import tqdm
 from PIL import Image
 
-train_category_download_max_count = 5;
+train_category_download_max_count = 15;
 
 def parse_data(data_file):
     csvfile = open(data_file, 'r')
