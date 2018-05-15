@@ -62,24 +62,28 @@ def download_image(id_url_cat):
         image_data = response.read()
     except:
         print('Warning: Could not download image {} from {}'.format(id, url))
+        os.remove(filename)
         return 1
 
     try:
         pil_image = Image.open(BytesIO(image_data))
     except:
         print('Warning: Failed to parse image {}'.format(id))
+        os.remove(filename)
         return 1
 
     try:
         pil_image_rgb = pil_image.convert('RGB')
     except:
         print('Warning: Failed to convert image {} to RGB'.format(id))
+        os.remove(filename)
         return 1
 
     try:
         pil_image_rgb.save(filename, format='JPEG', quality=90)
     except:
         print('Warning: Failed to save image {}'.format(filename))
+        os.remove(filename)
         return 1
 
     return 0
