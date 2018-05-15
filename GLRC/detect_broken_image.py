@@ -8,7 +8,20 @@ import sys
 from PIL import Image
 from tqdm import tqdm
 from shutil import rmtree
+from multiprocessing import Pool
 
+PROCESS_COUNT = 4
+img_paths = []
+
+
+def detect_one_image(process_index):
+    img_path = img_paths[process_index]
+    try:
+        img = Image.open(img_path)  # open the image file
+        img.load()
+    except (IOError, SyntaxError) as e:
+        os.remove(img_path)
+        print('Removed broken jpg file:', img_path)  # print out the names of corrupt files
 
 def detect():
     if len(sys.argv) != 2:
@@ -17,7 +30,7 @@ def detect():
 
     dir = sys.argv[1]
 
-    img_paths = []
+
 
     categories = os.listdir(dir)
 
@@ -32,13 +45,11 @@ def detect():
                     img_paths.append(img_path)
 
     print("Remove broken jpg file")
-    for img_path in tqdm(img_paths, total=len(img_paths)):
-        try:
-            img = Image.open(img_path)  # open the image file
-            img.load()
-        except (IOError, SyntaxError) as e:
-            os.remove(img_path)
-            print('Removed broken jpg file:', img_path)  # print out the names of corrupt files
+    with Pool(processes=PROCESS_COUNT) as p:
+        max_ = len(img_paths)
+        with tqdm(total=max_) as pbar:
+            for i, _ in enumerate(p.imap_unordered(detect_one_image, range(0, max_))):
+                pbar.update()
 
     print("Remove empty folder")
     for category in tqdm(categories, total=len(categories)):
