@@ -22,7 +22,7 @@ from urllib import request
 import tqdm
 from PIL import Image
 
-train_category_download_max_count = 15;
+train_category_download_max_count = 50;
 
 def parse_data(data_file):
     csvfile = open(data_file, 'r')
@@ -62,30 +62,37 @@ def download_image(id_url_cat):
         image_data = response.read()
     except:
         print('Warning: Could not download image {} from {}'.format(id, url))
-        os.remove(filename)
+        remove_file(filename)
         return 1
 
     try:
         pil_image = Image.open(BytesIO(image_data))
     except:
         print('Warning: Failed to parse image {}'.format(id))
-        os.remove(filename)
+        remove_file(filename)
         return 1
 
     try:
         pil_image_rgb = pil_image.convert('RGB')
     except:
         print('Warning: Failed to convert image {} to RGB'.format(id))
-        os.remove(filename)
+        remove_file(filename)
         return 1
 
     try:
         pil_image_rgb.save(filename, format='JPEG', quality=90)
     except:
         print('Warning: Failed to save image {}'.format(filename))
-        os.remove(filename)
+        remove_file(filename)
         return 1
 
+    return 0
+
+
+def remove_file(file_path):
+    try:
+        os.remove(file_path)
+    except:
     return 0
 
 
