@@ -2,12 +2,13 @@
 
 # !/usr/bin/python
 
+import math
 import os
 import sys
 
 from tqdm import tqdm
 
-validate_category_max_count = 3;
+SPLIT_RATIO = 0.2
 
 
 def split():
@@ -31,14 +32,18 @@ def split():
                 if img_file.endswith(".jpg") or img_file.endswith(".jpeg"):
                     validate_img_count += 1
 
+            train_img_list = []
             for img_file in os.listdir(train_sub_folder_path):
                 if img_file.endswith(".jpg") or img_file.endswith(".jpeg"):
-                    img_path = os.path.join(train_sub_folder_path, img_file)
-                    if validate_img_count < validate_category_max_count:
-                        os.rename(img_path, os.path.join(validate_sub_folder_path, img_file))
-                        validate_img_count += 1
-                    else:
-                        break
+                    train_img_list.append(img_file)
+
+            validate_img_count_max = math.ceil(len(train_img_list) * SPLIT_RATIO) - validate_img_count
+
+            if len(train_img_list) > 1:
+                for i in range(validate_img_count_max):
+                    img_file = train_img_list[i]
+                    train_img_path = os.path.join(train_sub_folder_path, img_file)
+                    os.rename(train_img_path, os.path.join(validate_sub_folder_path, img_file))
 
     return 0
 
