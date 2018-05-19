@@ -81,36 +81,22 @@ def train(args):
     batch_size = int(args.batch_size)
 
     # data prep
-    train_datagen = ImageDataGenerator(
-        preprocessing_function=preprocess_input,
-        rotation_range=30,
-        width_shift_range=0.2,
-        height_shift_range=0.2,
-        shear_range=0.2,
-        zoom_range=0.2,
-        horizontal_flip=True
+    datagen = ImageDataGenerator(
+        preprocessing_function=preprocess_input
     )
 
-    test_datagen = ImageDataGenerator(
-        preprocessing_function=preprocess_input,
-        rotation_range=30,
-        width_shift_range=0.2,
-        height_shift_range=0.2,
-        shear_range=0.2,
-        zoom_range=0.2,
-        horizontal_flip=True
-    )
-
-    train_generator = train_datagen.flow_from_directory(
+    train_generator = datagen.flow_from_directory(
         args.train_dir,
         target_size=(IM_WIDTH, IM_HEIGHT),
         batch_size=batch_size,
+        class_mode='categorical'
     )
 
-    validation_generator = test_datagen.flow_from_directory(
+    validation_generator = datagen.flow_from_directory(
         args.val_dir,
         target_size=(IM_WIDTH, IM_HEIGHT),
         batch_size=batch_size,
+        class_mode='categorical'
     )
 
     with open('validation_class_indices.json', 'w') as fp:
