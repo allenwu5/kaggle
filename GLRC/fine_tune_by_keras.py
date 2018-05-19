@@ -5,7 +5,7 @@ import os
 import sys
 
 import matplotlib as mpl
-from keras.applications.inception_v3 import InceptionV3, preprocess_input
+from keras.applications.densenet import DenseNet121, preprocess_input
 from keras.layers import Dense, GlobalAveragePooling2D
 from keras.models import Model
 from keras.optimizers import SGD
@@ -13,7 +13,7 @@ from keras.preprocessing.image import ImageDataGenerator
 
 mpl.use('TkAgg')
 
-IM_WIDTH = 299  # 299 for InceptionV3, 224 for DenseNet
+IM_WIDTH = 299  # 299 for InceptionV3
 IM_HEIGHT = IM_WIDTH
 NB_EPOCHS = 3
 BAT_SIZE = 32
@@ -103,7 +103,7 @@ def train(args):
         json.dump(validation_generator.class_indices, fp, sort_keys=True, indent=4)
 
     # setup model
-    base_model = InceptionV3(weights='imagenet', include_top=False)  # include_top=False excludes final FC layer
+    base_model = DenseNet121(weights='imagenet', include_top=False)  # include_top=False excludes final FC layer
     model = add_new_last_layer(base_model, nb_classes)
 
     # transfer learning
@@ -158,7 +158,7 @@ if __name__ == "__main__":
     a.add_argument("--val_dir", default="validate")
     a.add_argument("--nb_epoch", default=NB_EPOCHS)
     a.add_argument("--batch_size", default=BAT_SIZE)
-    a.add_argument("--output_model_file", default="inceptionv3-ft.model")
+    a.add_argument("--output_model_file", default="dense121-ft.model")
     a.add_argument("--plot", action="store_true")
 
     args = a.parse_args()
