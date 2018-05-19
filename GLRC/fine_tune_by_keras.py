@@ -1,6 +1,7 @@
 import argparse
 import glob
 import json
+import math
 import os
 import sys
 
@@ -13,12 +14,12 @@ from keras.preprocessing.image import ImageDataGenerator
 
 mpl.use('TkAgg')
 
-IM_WIDTH = 299  # 299 for InceptionV3
+IM_WIDTH = 224  # 299 for InceptionV3, 224 for Densenet121
 IM_HEIGHT = IM_WIDTH
 NB_EPOCHS = 3
 BAT_SIZE = 32
 FC_SIZE = 1024
-NB_IV3_LAYERS_TO_FREEZE = 172
+NB_IV3_LAYERS_TO_FREEZE = math.ceil(121 / 2)  # 172 for InceptionV3, 172 for Densenet121
 
 
 def get_nb_files(directory):
