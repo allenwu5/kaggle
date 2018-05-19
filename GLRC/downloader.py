@@ -54,7 +54,7 @@ def download_image(id_url_cat):
     filename = os.path.join(sub_folder, '{}.jpg'.format(id))
 
     if os.path.exists(filename):
-        print('Image {} already exists. Skipping download.'.format(filename))
+        # print('Image {} already exists. Skipping download.'.format(filename))
         return 0
 
     try:
@@ -93,6 +93,8 @@ def remove_file(file_path):
     try:
         os.remove(file_path)
     except:
+        return 0
+
     return 0
 
 

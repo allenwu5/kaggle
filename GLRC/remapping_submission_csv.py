@@ -2,9 +2,9 @@ import csv
 
 id_to_landmarks = {}
 write_list = []
-score_min = 0.1
+score_min = 0.0
 
-with open('submission_mapped.csv', newline='') as csv_file:
+with open('submission.csv', newline='') as csv_file:
     csv_reader = csv.reader(csv_file)
     # skip header
     next(csv_reader)
