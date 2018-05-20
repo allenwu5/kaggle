@@ -18,8 +18,8 @@ IM_WIDTH = 224  # 299 for InceptionV3, 224 for Densenet121
 IM_HEIGHT = IM_WIDTH
 NB_EPOCHS = 3
 BAT_SIZE = 32
-FC_SIZE = 1024
-NB_IV3_LAYERS_TO_FREEZE = math.ceil(121 / 2)  # 172 for InceptionV3, 172 for Densenet121
+FC_SIZE = 4096
+NB_IV3_LAYERS_TO_FREEZE = math.ceil(429 * 0.8)  # len(Densenet121.layers) = 429
 
 
 def get_nb_files(directory):
