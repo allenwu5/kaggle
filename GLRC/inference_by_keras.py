@@ -86,6 +86,7 @@ if __name__ == "__main__":
         model = load_model(args.model)
 
         img_paths = {}
+        img_cat_folder = {}
         categories = os.listdir(args.predict_dir)
         for category in tqdm(categories, total=len(categories)):
             sub_folder_path = os.path.join(args.predict_dir, category)
@@ -96,6 +97,7 @@ if __name__ == "__main__":
                         img_path = os.path.join(sub_folder_path, img_file)
                         img_id = img_file.split(".")[0]
                         img_paths[img_id] = img_path
+                        img_cat_folder[img_id] = category
 
         for img_id, img_path in tqdm(img_paths.items(), total=len(img_paths)):
             img = Image.open(img_path)
@@ -103,5 +105,5 @@ if __name__ == "__main__":
             preds = predict(model, img, target_size)
             # plot_preds(img, preds)
             index = np.argmax(preds, axis=None)
-            csv_writer.writerow([img_id, "{} {}".format(index_to_class[index], preds[index])])
+            csv_writer.writerow([img_id, "{} {} {}".format(img_cat_folder[img_id], index_to_class[index], preds[index])])
             csvfile.flush()
