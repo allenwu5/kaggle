@@ -16,10 +16,10 @@ mpl.use('TkAgg')
 
 IM_WIDTH = 224  # 299 for InceptionV3, 224 for Densenet121
 IM_HEIGHT = IM_WIDTH
-NB_EPOCHS = 3
+NB_EPOCHS = 5
 BAT_SIZE = 32
-FC_SIZE = 4096
-NB_IV3_LAYERS_TO_FREEZE = math.ceil(429 * 0.8)  # len(Densenet121.layers) = 429
+FC_SIZE = 1024
+NB_LAYERS_TO_FREEZE = math.ceil(429 * 0.5)  # len(Densenet121.layers) = 429
 
 
 def get_nb_files(directory):
@@ -66,9 +66,9 @@ def setup_to_finetune(model):
     Args:
       model: keras model
     """
-    for layer in model.layers[:NB_IV3_LAYERS_TO_FREEZE]:
+    for layer in model.layers[:NB_LAYERS_TO_FREEZE]:
         layer.trainable = False
-    for layer in model.layers[NB_IV3_LAYERS_TO_FREEZE:]:
+    for layer in model.layers[NB_LAYERS_TO_FREEZE:]:
         layer.trainable = True
     model.compile(optimizer=SGD(lr=0.0001, momentum=0.9), loss='categorical_crossentropy', metrics=['accuracy'])
 
@@ -121,6 +121,7 @@ def train(args):
     # fine-tuning
     setup_to_finetune(model)
 
+    nb_epoch = 1
     history_ft = model.fit_generator(
         train_generator,
         epochs=nb_epoch,
