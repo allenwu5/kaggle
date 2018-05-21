@@ -16,7 +16,7 @@ mpl.use('TkAgg')
 
 IM_WIDTH = 224  # 299 for InceptionV3, 224 for Densenet121
 IM_HEIGHT = IM_WIDTH
-NB_EPOCHS = 5
+NB_EPOCHS = 10
 BAT_SIZE = 32
 FC_SIZE = 1024
 NB_LAYERS_TO_FREEZE = math.ceil(429 * 0.5)  # len(Densenet121.layers) = 429
@@ -121,7 +121,7 @@ def train(args):
     # fine-tuning
     setup_to_finetune(model)
 
-    nb_epoch = 1
+    nb_epoch = NB_EPOCHS / 2
     history_ft = model.fit_generator(
         train_generator,
         epochs=nb_epoch,
