@@ -1,7 +1,6 @@
 import argparse
 import glob
 import json
-import math
 import os
 import sys
 
@@ -16,10 +15,9 @@ mpl.use('TkAgg')
 
 IM_WIDTH = 224  # 299 for InceptionV3, 224 for Densenet121
 IM_HEIGHT = IM_WIDTH
-NB_EPOCHS = 3
+NB_EPOCHS = 8
 BAT_SIZE = 32
-FC_SIZE = 1024
-NB_LAYERS_TO_FREEZE = math.ceil(429 * 0.2)  # len(Densenet121.layers) = 429
+FC_SIZE = 2048
 
 
 def get_nb_files(directory):
@@ -66,9 +64,8 @@ def setup_to_finetune(model):
     Args:
       model: keras model
     """
-    for layer in model.layers[:NB_LAYERS_TO_FREEZE]:
-        layer.trainable = False
-    for layer in model.layers[NB_LAYERS_TO_FREEZE:]:
+
+    for layer in model.layers:
         layer.trainable = True
     model.compile(optimizer=SGD(lr=0.0001, momentum=0.9), loss='categorical_crossentropy', metrics=['accuracy'])
 
@@ -83,7 +80,13 @@ def train(args):
 
     # data prep
     datagen = ImageDataGenerator(
-        preprocessing_function=preprocess_input
+        preprocessing_function=preprocess_input,
+        rotation_range=30,
+        width_shift_range=0.2,
+        height_shift_range=0.2,
+        shear_range=0.2,
+        zoom_range=0.2,
+        horizontal_flip=True
     )
 
     train_generator = datagen.flow_from_directory(
