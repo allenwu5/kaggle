@@ -111,15 +111,15 @@ def train(args):
     model = add_new_last_layer(base_model, nb_classes)
 
     # transfer learning
-    # setup_to_transfer_learn(model, base_model)
-    #
-    # history_tl = model.fit_generator(
-    #     train_generator,
-    #     epochs=nb_epoch,
-    #     steps_per_epoch=nb_train_samples / batch_size,
-    #     validation_data=validation_generator,
-    #     validation_steps=nb_val_samples / batch_size,
-    #     class_weight='auto')
+    setup_to_transfer_learn(model, base_model)
+
+    history_tl = model.fit_generator(
+        train_generator,
+        epochs=nb_epoch,
+        steps_per_epoch=nb_train_samples / batch_size,
+        validation_data=validation_generator,
+        validation_steps=nb_val_samples / batch_size,
+        class_weight='auto')
 
     # fine-tuning
     setup_to_finetune(model)
