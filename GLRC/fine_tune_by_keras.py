@@ -121,6 +121,8 @@ def train(args):
         validation_steps=nb_val_samples / batch_size,
         class_weight='auto')
 
+    model.save("transferL_".format(args.output_model_file))
+
     # fine-tuning
     setup_to_finetune(model)
 
