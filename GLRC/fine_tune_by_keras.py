@@ -7,7 +7,7 @@ import sys
 import matplotlib as mpl
 from keras.applications.densenet import DenseNet121, preprocess_input
 from keras.layers import Dense, GlobalAveragePooling2D
-from keras.models import Model
+from keras.models import Model, load_model
 from keras.optimizers import SGD
 from keras.preprocessing.image import ImageDataGenerator
 
@@ -15,9 +15,9 @@ mpl.use('TkAgg')
 
 IM_WIDTH = 224  # 299 for InceptionV3, 224 for Densenet121
 IM_HEIGHT = IM_WIDTH
-NB_EPOCHS = 8
+NB_EPOCHS = 3
 BAT_SIZE = 32
-FC_SIZE = 2048
+FC_SIZE = 1024
 
 
 def get_nb_files(directory):
@@ -107,21 +107,23 @@ def train(args):
         json.dump(validation_generator.class_indices, fp, sort_keys=True, indent=4)
 
     # setup model
-    base_model = DenseNet121(weights='imagenet', include_top=False)  # include_top=False excludes final FC layer
-    model = add_new_last_layer(base_model, nb_classes)
 
-    # transfer learning
-    setup_to_transfer_learn(model, base_model)
+    if args.load_model:
+        model = load_model(args.output_model_file)
+    else:
+        base_model = DenseNet121(weights='imagenet', include_top=False)  # include_top=False excludes final FC layer
+        model = add_new_last_layer(base_model, nb_classes)
 
-    history_tl = model.fit_generator(
-        train_generator,
-        epochs=nb_epoch,
-        steps_per_epoch=nb_train_samples / batch_size,
-        validation_data=validation_generator,
-        validation_steps=nb_val_samples / batch_size,
-        class_weight='auto')
+        # transfer learning
+        setup_to_transfer_learn(model, base_model)
 
-    model.save("transferL_{}".format(args.output_model_file))
+        history_tl = model.fit_generator(
+            train_generator,
+            epochs=nb_epoch,
+            steps_per_epoch=nb_train_samples / batch_size,
+            validation_data=validation_generator,
+            validation_steps=nb_val_samples / batch_size,
+            class_weight='auto')
 
     # fine-tuning
     setup_to_finetune(model)
@@ -166,6 +168,7 @@ if __name__ == "__main__":
     a.add_argument("--batch_size", default=BAT_SIZE)
     a.add_argument("--output_model_file", default="dense121-ft.model")
     a.add_argument("--plot", action="store_true")
+    a.add_argument("--load_model", default=None)
 
     args = a.parse_args()
     if args.train_dir is None or args.val_dir is None:
