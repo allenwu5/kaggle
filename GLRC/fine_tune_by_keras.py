@@ -103,14 +103,12 @@ def train(args):
         class_mode='categorical'
     )
 
-    with open('validation_class_indices.json', 'w') as fp:
-        json.dump(validation_generator.class_indices, fp, sort_keys=True, indent=4)
-
     # setup model
-
     if args.load_model:
         model = load_model(args.output_model_file)
     else:
+        with open('validation_class_indices.json', 'w') as fp:
+            json.dump(validation_generator.class_indices, fp, sort_keys=True, indent=4)
         base_model = DenseNet121(weights='imagenet', include_top=False)  # include_top=False excludes final FC layer
         model = add_new_last_layer(base_model, nb_classes)
 
