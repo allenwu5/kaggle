@@ -106,6 +106,7 @@ def train(args):
     # setup model
     if args.load_model:
         model = load_model(args.output_model_file)
+        print("load model: {}".format(args.output_model_file))
     else:
         with open('validation_class_indices.json', 'w') as fp:
             json.dump(validation_generator.class_indices, fp, sort_keys=True, indent=4)

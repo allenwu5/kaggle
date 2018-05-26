@@ -11,7 +11,7 @@ from shutil import rmtree
 from PIL import Image
 from tqdm import tqdm
 
-PROCESS_COUNT = 32
+PROCESS_COUNT = 24 # my GCP account limit
 img_paths = []
 valid_images = Manager().list()  # <-- can be shared between processes.
 

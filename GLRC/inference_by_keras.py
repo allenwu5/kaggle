@@ -16,7 +16,7 @@ import csv
 # import matplotlib.pyplot as plt
 
 target_size = (229, 229)  # fixed size for InceptionV3 architecture
-
+TOP_K = 100
 
 def predict(model, img, target_size):
     """Run model prediction on image
@@ -59,14 +59,6 @@ def plot_preds(image, preds):
 
 if __name__ == "__main__":
     a = argparse.ArgumentParser()
-
-    # img_test = "test/00faf8958470eb9a.jpg"  # small green leaf tower - tourist attraction
-
-    # img_{train folder}_{class in model}
-    # img_9003_0 = "train/9003/d83118ef0291a8a3.jpg"  # Louvre Museum - white - big - horizontal - louvre triangle
-    # img_9301_5 = "train/9301/c5a836101f701633.jpg"  # cathedral - yellow clock tower
-    # img_9999_11 = "train/9999/bba9d071d223e817.jpg"  # Bass Harbor Head Lighthouse
-
     a.add_argument("--model", default="dense121-ft.model")
     a.add_argument("--predict_dir")
 
@@ -104,6 +96,13 @@ if __name__ == "__main__":
 
             preds = predict(model, img, target_size)
             # plot_preds(img, preds)
-            index = np.argmax(preds, axis=None)
-            csv_writer.writerow([img_id, "{} {} {}".format(img_cat_folder[img_id], index_to_class[index], preds[index])])
+            top1_index = np.argmax(preds, axis=None)
+            topK_index = preds.argsort()[-TOP_K:][::-1]
+            assert top1_index == topK_index[0]
+
+            top1_class = index_to_class[top1_index]
+            top1_score = preds[top1_index]
+            topK_scores = " ".join([str(preds[x]) for x in topK_index])
+            csv_writer.writerow(
+                [img_id, "{} {} {} {}".format(img_cat_folder[img_id], top1_class, top1_score, topK_scores)])
             csvfile.flush()
