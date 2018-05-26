@@ -102,7 +102,7 @@ if __name__ == "__main__":
 
             top1_class = index_to_class[top1_index]
             top1_score = preds[top1_index]
-            topK_scores = " ".join([str(preds[x]) for x in topK_index])
+            topK_scores = " ".join([format(preds[x], "10.10f") for x in topK_index])
             csv_writer.writerow(
                 [img_id, "{} {} {} {}".format(img_cat_folder[img_id], top1_class, top1_score, topK_scores)])
             csvfile.flush()
