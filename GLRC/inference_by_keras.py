@@ -15,7 +15,8 @@ import csv
 
 # import matplotlib.pyplot as plt
 
-target_size = (64, 64)  # fixed size for InceptionV3 architecture
+IM_WIDTH = 128
+target_size = (IM_WIDTH, IM_WIDTH)
 TOP_K = 10
 
 def predict(model, img, target_size):
