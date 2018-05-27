@@ -16,7 +16,7 @@ import csv
 # import matplotlib.pyplot as plt
 
 target_size = (229, 229)  # fixed size for InceptionV3 architecture
-TOP_K = 100
+TOP_K = 10
 
 def predict(model, img, target_size):
     """Run model prediction on image
