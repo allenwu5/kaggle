@@ -81,8 +81,6 @@ def train(args):
     # data prep
     datagen = ImageDataGenerator(
         preprocessing_function=preprocess_input,
-        featurewise_center=True,
-        featurewise_std_normalization=True,
         rotation_range=30,
         width_shift_range=0.2,
         height_shift_range=0.2,
