@@ -15,7 +15,7 @@ import csv
 
 # import matplotlib.pyplot as plt
 
-target_size = (229, 229)  # fixed size for InceptionV3 architecture
+target_size = (64, 64)  # fixed size for InceptionV3 architecture
 TOP_K = 10
 
 def predict(model, img, target_size):
@@ -98,7 +98,6 @@ if __name__ == "__main__":
             # plot_preds(img, preds)
             top1_index = np.argmax(preds, axis=None)
             topK_index = preds.argsort()[-TOP_K:][::-1]
-            assert top1_index == topK_index[0]
 
             top1_class = index_to_class[top1_index]
             top1_score = preds[top1_index]

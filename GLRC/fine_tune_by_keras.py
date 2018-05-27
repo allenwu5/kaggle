@@ -13,7 +13,7 @@ from keras.preprocessing.image import ImageDataGenerator
 
 mpl.use('TkAgg')
 
-IM_WIDTH = 224  # 299 for InceptionV3, 224 for Densenet121
+IM_WIDTH = 64  # 299 for InceptionV3, 224 for Densenet121
 IM_HEIGHT = IM_WIDTH
 NB_EPOCHS = 3
 BAT_SIZE = 32
