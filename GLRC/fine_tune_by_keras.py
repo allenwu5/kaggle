@@ -79,7 +79,7 @@ def train(args):
     batch_size = int(args.batch_size)
 
     # data prep
-    ImageDataGenerator(
+    datagen = ImageDataGenerator(
         preprocessing_function=preprocess_input,
         rotation_range=30,
         width_shift_range=0.2,
