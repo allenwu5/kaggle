@@ -15,7 +15,7 @@ import csv
 
 # import matplotlib.pyplot as plt
 
-IM_WIDTH = 128
+IM_WIDTH = 224
 target_size = (IM_WIDTH, IM_WIDTH)
 TOP_K = 10
 

@@ -13,7 +13,7 @@ from keras.preprocessing.image import ImageDataGenerator
 
 mpl.use('TkAgg')
 
-IM_WIDTH = 128  # 299 for InceptionV3, 224 for Densenet121
+IM_WIDTH = 224  # 299 for InceptionV3, 224 for Densenet121
 IM_HEIGHT = IM_WIDTH
 NB_EPOCHS = 3
 BAT_SIZE = 32
@@ -81,6 +81,8 @@ def train(args):
     # data prep
     datagen = ImageDataGenerator(
         preprocessing_function=preprocess_input,
+        featurewise_center=True,
+        featurewise_std_normalization=True,
         rotation_range=30,
         width_shift_range=0.2,
         height_shift_range=0.2,
@@ -120,6 +122,7 @@ def train(args):
             steps_per_epoch=nb_train_samples / batch_size,
             validation_data=validation_generator,
             validation_steps=nb_val_samples / batch_size,
+            shuffle=True,
             class_weight='auto')
 
     # fine-tuning
@@ -131,6 +134,7 @@ def train(args):
         steps_per_epoch=nb_train_samples / batch_size,
         validation_data=validation_generator,
         validation_steps=nb_val_samples / batch_size,
+        shuffle=True,
         class_weight='auto')
 
     model.save(args.output_model_file)
