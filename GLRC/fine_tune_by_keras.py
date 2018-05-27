@@ -81,6 +81,8 @@ def train(args):
     # data prep
     datagen = ImageDataGenerator(
         preprocessing_function=preprocess_input,
+        featurewise_center=True,
+        featurewise_std_normalization=True,
         rotation_range=30,
         width_shift_range=0.2,
         height_shift_range=0.2,
@@ -120,7 +122,6 @@ def train(args):
             steps_per_epoch=nb_train_samples / batch_size,
             validation_data=validation_generator,
             validation_steps=nb_val_samples / batch_size,
-            shuffle=True,
             class_weight='auto')
 
     # fine-tuning
@@ -132,7 +133,6 @@ def train(args):
         steps_per_epoch=nb_train_samples / batch_size,
         validation_data=validation_generator,
         validation_steps=nb_val_samples / batch_size,
-        shuffle=True,
         class_weight='auto')
 
     model.save(args.output_model_file)
