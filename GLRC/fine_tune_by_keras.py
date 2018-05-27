@@ -18,6 +18,7 @@ IM_HEIGHT = IM_WIDTH
 NB_EPOCHS = 3
 BAT_SIZE = 32
 FC_SIZE = 1024
+DATA_AUG = None
 
 
 def get_nb_files(directory):
@@ -79,15 +80,20 @@ def train(args):
     batch_size = int(args.batch_size)
 
     # data prep
-    datagen = ImageDataGenerator(
-        preprocessing_function=preprocess_input,
-        rotation_range=30,
-        width_shift_range=0.2,
-        height_shift_range=0.2,
-        shear_range=0.2,
-        zoom_range=0.2,
-        horizontal_flip=True
-    )
+    if DATA_AUG:
+        datagen = ImageDataGenerator(
+            preprocessing_function=preprocess_input,
+            rotation_range=30,
+            width_shift_range=0.2,
+            height_shift_range=0.2,
+            shear_range=0.2,
+            zoom_range=0.2,
+            horizontal_flip=True
+        )
+    else:
+        datagen = ImageDataGenerator(
+            preprocessing_function=preprocess_input
+        )
 
     train_generator = datagen.flow_from_directory(
         args.train_dir,
