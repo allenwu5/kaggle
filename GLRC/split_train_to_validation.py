@@ -5,6 +5,7 @@
 import math
 import os
 import sys
+from shutil import copyfile
 
 from tqdm import tqdm
 
@@ -44,6 +45,11 @@ def split():
                     img_file = train_img_list[i]
                     train_img_path = os.path.join(train_sub_folder_path, img_file)
                     os.rename(train_img_path, os.path.join(validate_sub_folder_path, img_file))
+            if len(train_img_list) == 1:
+                for i in range(validate_img_count_max):
+                    img_file = train_img_list[0]
+                    train_img_path = os.path.join(train_sub_folder_path, img_file)
+                    copyfile(train_img_path, os.path.join(validate_sub_folder_path, img_file))
 
     return 0
 
