@@ -1,1 +1,1 @@
-w.r.t. `https://www.kaggle.com/c/landmark-recognition-challenge/
+w.r.t. https://www.kaggle.com/c/landmark-recognition-challenge/
